@@ -1,0 +1,31 @@
+{
+  "defaultProvider": "openai-codex",
+  "defaultModel": "gpt-5.5",
+  "defaultThinkingLevel": "medium",
+  "enabledModels": [
+    "openai-codex/gpt-5.5",
+    "openai-codex/gpt-5.3-codex",
+    "openai-codex/gpt-5.4-mini"
+  ],
+  "theme": "dark",
+  "quietStartup": true,
+  "collapseChangelog": true,
+  "enableInstallTelemetry": false,
+  "compaction": {
+    "enabled": true
+  },
+  "retry": {
+    "enabled": true,
+    "maxRetries": 3
+  },
+  "extensions": [
+    "~/.local/share/npm/lib/node_modules/@mariozechner/pi-coding-agent/examples/extensions/permission-gate.ts",
+    "~/.local/share/npm/lib/node_modules/@mariozechner/pi-coding-agent/examples/extensions/protected-paths.ts",
+    "~/.local/share/npm/lib/node_modules/@mariozechner/pi-coding-agent/examples/extensions/plan-mode",
+    "~/.local/share/npm/lib/node_modules/@mariozechner/pi-coding-agent/examples/extensions/todo.ts",
+    "~/.local/share/npm/lib/node_modules/@mariozechner/pi-coding-agent/examples/extensions/handoff.ts",
+    "~/.local/share/npm/lib/node_modules/@mariozechner/pi-coding-agent/examples/extensions/git-checkpoint.ts",
+    "~/.local/share/npm/lib/node_modules/@mariozechner/pi-coding-agent/examples/extensions/notify.ts",
+    "~/.local/share/npm/lib/node_modules/@mariozechner/pi-coding-agent/examples/extensions/titlebar-spinner.ts"
+  ]
+}
