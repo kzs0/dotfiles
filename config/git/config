@@ -1,0 +1,42 @@
+# Git config — managed by ~/dotfiles.
+# Identity and credential helpers live in ~/.gitconfig (machine-local, written by
+# `just git` / `gh auth setup-git` / `glab auth login`).
+
+[init]
+	defaultBranch = main
+[core]
+	pager = delta
+	autocrlf = input
+[interactive]
+	diffFilter = delta --color-only
+[delta]
+	navigate = true
+	line-numbers = true
+[merge]
+	conflictstyle = zdiff3
+[diff]
+	algorithm = histogram
+	colorMoved = default
+[pull]
+	rebase = true
+[push]
+	autoSetupRemote = true
+	default = current
+[fetch]
+	prune = true
+[rebase]
+	autoStash = true
+	autoSquash = true
+[rerere]
+	enabled = true
+[branch]
+	sort = -committerdate
+[help]
+	autocorrect = prompt
+[alias]
+	st = status -sb
+	lg = log --oneline --graph --decorate
+	last = log -1 HEAD --stat
+	unstage = reset HEAD --
+	undo = reset --soft HEAD~1
+	amend = commit --amend --no-edit
