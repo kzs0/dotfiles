@@ -14,6 +14,17 @@ mouse-hide-while-typing = true
 confirm-close-surface = false
 shell-integration = detect
 
+background-opacity = 0.92
+background-blur = 20
+
+# --- Quick terminal (drop-down) -----------------------------------------------
+# global: works while Ghostty is unfocused (macOS needs Accessibility permission)
+quick-terminal-position = top
+quick-terminal-screen = mouse
+quick-terminal-autohide = true
+quick-terminal-animation-duration = 0.15
+keybind = global:ctrl+grave_accent=toggle_quick_terminal
+
 # Machine-specific overrides (untracked, optional)
 config-file = ?local.conf
 

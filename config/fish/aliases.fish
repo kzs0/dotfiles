@@ -71,3 +71,7 @@ abbr -a c claude
 abbr -a reload 'exec fish'
 abbr -a path 'printf "%s\n" $PATH'
 abbr -a myip 'curl -s https://ifconfig.me; echo'
+
+# --- macOS -----------------------------------------------------------------
+# keep the Mac awake (display, idle, disk, system) until ctrl-c
+type -q caffeinate; and abbr -a caf 'caffeinate -dimsu'
