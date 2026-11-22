@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Packages: ./Brewfile on macOS, ./nix/packages.nix via Home Manager on Linux.
 . "$(dirname "$0")/lib.sh"
+load_state   # DOTFILES_CLOUD picks the cloud CLIs in the Brewfile / flake
 
 # Linux Home Manager profile: cli (Ubuntu/servers) or desktop (NixOS, adds ghostty + zed)
 HM_TARGET="${DOTFILES_PROFILE:-cli}-$(uname -m | sed 's/arm64/aarch64/')-linux"
