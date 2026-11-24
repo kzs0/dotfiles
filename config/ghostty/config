@@ -13,6 +13,9 @@ copy-on-select = clipboard
 mouse-hide-while-typing = true
 confirm-close-surface = false
 shell-integration = detect
+# over ssh: install the xterm-ghostty terminfo on the host (falls back to
+# TERM=xterm-256color if it can't) and forward COLORTERM etc.
+shell-integration-features = ssh-terminfo,ssh-env
 
 background-opacity = 0.92
 background-blur = 20
