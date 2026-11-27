@@ -40,7 +40,6 @@ with pkgs;
   gcc # tree-sitter parser builds
   uv # python tools (headroom)
   mise # language versions picked in `just configure`
-  python3 # rex-resurrect
 
   # agents
   codex

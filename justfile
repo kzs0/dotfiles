@@ -6,7 +6,7 @@
 #   packages  Brewfile (macOS) or nix/packages.nix via Home Manager (Linux)
 #   fish      fisher plugins + saved tide prompt        shell    fish as login shell
 #   nvim      LazyVim plugins (pinned lockfile)         agents   claude, codex, pi
-#   headroom  token-compression proxy                   rex      Rex app + rex-resurrect
+#   headroom  token-compression proxy                   rex      Rex app, terminfo, skills
 #   podman    container VM/socket for k3d               macos    optional macOS defaults
 #   langs     python/go/node/rust versions via mise     shortcut short `dots`-style command
 # Configs in config/<app> are symlinked into place by scripts/link.sh.
@@ -88,3 +88,7 @@ k3d name="dev" agents="1":
 # delete a k3d cluster
 k3d-delete name="dev":
     DOCKER_HOST="unix://$(fish -c 'echo $DOTFILES_PODMAN_SOCK')" k3d cluster delete {{name}}
+
+# TEMPORARY: remove the old rex-resurrect daemon (Rex restores pane programs itself now)
+rex-resurrect-cleanup:
+    {{s}}/rex-resurrect-cleanup.sh
