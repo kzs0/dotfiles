@@ -23,10 +23,21 @@ scripts/<name>.sh   one script per component: install | remove | update
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/kzs0/dotfiles/main/install.sh)"
 ```
 
+It ends in a setup wizard (arrow keys / `j` `k` to move, space to tick, enter to confirm):
+
+1. **Components**: packages, fish + tide, fish as login shell, Neovim plugins, coding agents,
+   Headroom, Rex, podman, macOS defaults.
+2. **Languages**: Python, Go, Node.js, Rust via [mise](https://mise.jdx.dev), and the versions of each
+   (`3.13 3.12`: several are fine, the first is the default).
+3. **Cloud CLIs**: gcloud, aws, az (added to the Brewfile / Home Manager profile).
+4. **A short command** (default `dots`) that runs recipes from any directory: `dots update`, `dots doctor`.
+
+Choices are saved in `~/.config/dotfiles/install.env` (machine-local), so `just install` and `just update`
+reuse them. Change them with `just configure`. `./install.sh --yes` / `just install --yes` skips the questions.
+
 Then the interactive bits:
 
 ```sh
-just setup shell                          # fish as login shell (sudo once)
 just auth                                 # gh + glab login, git credential helpers
 just git-identity "Your Name" you@x.com   # stored in ~/.gitconfig (machine-local)
 ```
@@ -39,12 +50,14 @@ nixpkgs (meant for NixOS; on Ubuntu use their upstream .deb/AppImage builds).
 ```sh
 just                     # list recipes
 just doctor              # what's linked / installed / missing
-just update              # git pull + update every component
-just setup <component>   # (re)run one piece: packages fish nvim shell agents headroom rex podman macos
+just update              # git pull + update the components you picked
+just configure           # re-run the wizard (components, language versions, cloud CLIs, command)
+just setup <component>   # (re)run one piece: packages fish nvim shell agents langs headroom rex podman shortcut macos
 just remove <component>  # undo one piece, e.g. `just remove headroom`
 just link zed            # (re)link one config;  just unlink zed
 just k3d                 # dev cluster on podman;  just k3d-delete
-dotfiles <recipe>        # same thing from any directory (fish function)
+dotfiles <recipe>        # same thing from any directory (fish function, tab-completes recipes)
+dots <recipe>            # the shorter name you picked in the wizard
 ```
 
 Each component is `scripts/<name>.sh install|remove|update`, so it's easy to read or run directly.
@@ -52,9 +65,13 @@ Each component is `scripts/<name>.sh install|remove|update`, so it's easy to rea
 ## Uninstall
 
 ```sh
-just uninstall           # unlink configs, remove fish plugins, rex-resurrect, headroom; restore default shell
-just remove packages     # also remove the packages (asks first)
+just uninstall           # menu of what's installed (all ticked); untick what to keep
+just uninstall --yes     # remove everything, packages included, without asking
+just remove <component>  # just one piece
 ```
+
+It goes in reverse order (packages last, keeping fish/just/git so the machine still works), restores the
+default login shell, removes the language versions it added to mise and the shortcut command, and unlinks configs.
 
 Files that existed before linking are moved to `~/.dotfiles-backup/<timestamp>/`.
 
@@ -101,7 +118,10 @@ brings back what was *running* in each pane:
 ## Adding things
 
 - **CLI tool** → add to both `Brewfile` and `nix/packages.nix`.
-- **Component with setup steps** → add `scripts/<name>.sh` (copy an existing one) and list it in `components` in the justfile.
+- **Language** → mise handles most (`mise registry`); add it to the Languages menu in `scripts/setup.sh`.
+- **Cloud CLI** → add to the cloud block in `Brewfile` and `nix/packages.nix`, and to the menu in `scripts/setup.sh`.
+- **Component with setup steps** → add `scripts/<name>.sh` (copy an existing one), list it in `components` in the
+  justfile and in `ORDER` + the Components menu in `scripts/setup.sh`.
 - **Config file** → put it in `config/<app>/…` and run `just link`. New `config/<app>` dirs are picked up
   automatically; to link somewhere other than `~/.config/<app>`, add a `.link-target` file (path relative to `$HOME`).
 - **Alias / abbr** → `config/fish/aliases.fish`. **Function** → `config/fish/functions/<name>.fish`.

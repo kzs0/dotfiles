@@ -21,5 +21,14 @@ test -d $HOME/.nix-profile/bin; and fish_add_path -g $HOME/.nix-profile/bin
 set -l rexbin "$HOME/Library/Application Support/com.superlogical.rex/RexServer/Versions/Current/Rex Server.app/Contents/MacOS"
 test -d $rexbin; and fish_add_path -ga $rexbin
 
+# mise (language versions): full activation in interactive shells, shims elsewhere
+if type -q mise
+    if status is-interactive
+        mise activate fish | source
+    else
+        fish_add_path -g $HOME/.local/share/mise/shims
+    end
+end
+
 # User bins (claude installs to ~/.local/bin; npm globals go to ~/.local/share/npm/bin)
 fish_add_path -g $HOME/.local/bin $HOME/.local/share/npm/bin $HOME/go/bin $HOME/.cargo/bin

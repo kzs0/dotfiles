@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Optional macOS defaults (`just setup macos`). Not part of `just install`.
+# Optional macOS defaults: off by default in the `just install` wizard, or `just setup macos`.
 . "$(dirname "$0")/lib.sh"
 
 install() {
