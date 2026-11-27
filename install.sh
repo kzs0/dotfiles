@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Bootstrap a fresh machine:
 #   bash -c "$(curl -fsSL https://raw.githubusercontent.com/kzs0/dotfiles/main/install.sh)"
-# (or clone the repo anywhere and run ./install.sh)
+# (or clone the repo anywhere and run ./install.sh). It ends in the setup wizard;
+# ./install.sh --yes skips the questions and uses the defaults.
 set -euo pipefail
 
 REPO="${DOTFILES_REPO:-kzs0/dotfiles}"
@@ -49,4 +50,4 @@ fi
 
 cd "$DEST"
 log "running just install"
-"${JUST[@]}" install
+"${JUST[@]}" install "$@"

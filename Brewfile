@@ -34,6 +34,7 @@ brew "neovim"
 brew "lazygit"      # LazyVim git UI (<leader>gg)
 brew "tree-sitter-cli" # LazyVim parser builds
 brew "uv"           # python tools (headroom)
+brew "mise"         # language versions picked in `just configure` (python, go, node, rust)
 
 # --- containers & kubernetes -------------------------------------------------
 brew "podman"
@@ -42,6 +43,12 @@ brew "kubernetes-cli"
 brew "kubectx"
 brew "helm"
 brew "k9s"
+
+# --- cloud CLIs: only the ones picked in `just configure` (DOTFILES_CLOUD) --------
+cloud = ENV.fetch("DOTFILES_CLOUD", "").split
+cask "gcloud-cli" if cloud.include?("gcloud")
+brew "awscli"     if cloud.include?("aws")
+brew "azure-cli"  if cloud.include?("azure")
 
 # --- macOS apps --------------------------------------------------------------
 if OS.mac?

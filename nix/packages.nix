@@ -1,5 +1,6 @@
 # Linux package set — keep in sync with ../Brewfile (macOS).
-{ pkgs, gui ? false }:
+# `cloud` is the list picked in `just configure` (DOTFILES_CLOUD), e.g. [ "gcloud" "aws" ].
+{ pkgs, gui ? false, cloud ? [ ] }:
 with pkgs;
 [
   # shell
@@ -38,6 +39,7 @@ with pkgs;
   tree-sitter
   gcc # tree-sitter parser builds
   uv # python tools (headroom)
+  mise # language versions picked in `just configure`
   python3 # rex-resurrect
 
   # agents
@@ -59,3 +61,6 @@ with pkgs;
   ghostty
   zed-editor
 ]
+++ lib.optional (builtins.elem "gcloud" cloud) google-cloud-sdk
+++ lib.optional (builtins.elem "aws" cloud) awscli2
+++ lib.optional (builtins.elem "azure" cloud) azure-cli

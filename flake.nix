@@ -15,6 +15,8 @@
       # (the justfile does this). One flake works for every user/machine.
       user = let u = builtins.getEnv "USER"; in if u == "" then throw "USER is not set; build with --impure (just nix does this)" else u;
       home = let h = builtins.getEnv "HOME"; in if h == "" then "/home/${user}" else h;
+      # cloud CLIs picked in `just configure`; scripts/packages.sh exports DOTFILES_CLOUD
+      cloud = builtins.filter (s: builtins.isString s && s != "") (builtins.split " " (builtins.getEnv "DOTFILES_CLOUD"));
 
       mkHome = system: gui:
         home-manager.lib.homeManagerConfiguration {
@@ -24,7 +26,7 @@
               home.username = user;
               home.homeDirectory = home;
               home.stateVersion = "25.05";
-              home.packages = import ./nix/packages.nix { inherit pkgs gui; };
+              home.packages = import ./nix/packages.nix { inherit pkgs gui cloud; };
               fonts.fontconfig.enable = true;
               # Configs are plain files symlinked by scripts/link.sh, not by Home
               # Manager, so they behave identically on macOS and Linux.
