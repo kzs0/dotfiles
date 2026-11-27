@@ -38,7 +38,6 @@ with pkgs;
   tree-sitter
   gcc # tree-sitter parser builds
   uv # python tools (headroom)
-  python3 # rex-resurrect
 
   # agents
   codex

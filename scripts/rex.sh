@@ -1,13 +1,10 @@
 #!/usr/bin/env bash
-# Rex (macOS): the app, start at login, terminfo, agent skills, and the
-# rex-resurrect daemon that resumes pane programs after a server restart.
+# Rex (macOS): the app, start at login, terminfo and agent skills. Rex resumes
+# pane programs after a server restart itself (this used to be rex-resurrect;
+# `just rex-resurrect-cleanup` removes that daemon from older machines).
 . "$(dirname "$0")/lib.sh"
 
 DMG=https://blob.superlogical.com/download/rex-app/preview/latest.dmg
-LABEL=dev.kzs0.rex-resurrect
-PLIST="$HOME/Library/LaunchAgents/$LABEL.plist"
-UNIT="$HOME/.config/systemd/user/rex-resurrect.service"
-LOG="$HOME/.local/state/rex-resurrect/daemon.log"
 
 install_app() {
   ls -d /Applications/Rex*.app >/dev/null 2>&1 && return
@@ -25,53 +22,20 @@ login_item() {
     osascript -e "tell application \"System Events\" to make login item at end with properties {path:\"$app\", hidden:true}" >/dev/null
 }
 
-install_resurrect() {
-  local bin="$HOME/.local/bin/rex-resurrect"
-  [ -x "$bin" ] || { say "rex-resurrect not linked — run 'just link bin'"; return 1; }
-  mkdir -p "$(dirname "$LOG")"
-  if is_mac; then
-    cat > "$PLIST" <<PLIST
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0"><dict>
-  <key>Label</key><string>$LABEL</string>
-  <key>ProgramArguments</key><array><string>$bin</string><string>daemon</string></array>
-  <key>EnvironmentVariables</key><dict>
-    <key>PATH</key><string>$REX_BIN:$HOME/.local/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
-  </dict>
-  <key>RunAtLoad</key><true/>
-  <key>KeepAlive</key><true/>
-  <key>StandardOutPath</key><string>$LOG</string>
-  <key>StandardErrorPath</key><string>$LOG</string>
-</dict></plist>
-PLIST
-    launchctl bootout "gui/$(id -u)/$LABEL" 2>/dev/null || true
-    launchctl bootstrap "gui/$(id -u)" "$PLIST"
-  else
-    mkdir -p "$(dirname "$UNIT")"
-    printf '[Unit]\nDescription=Resume Rex pane programs after a server restart\n\n[Service]\nExecStart=%s daemon\nRestart=always\nEnvironment=PATH=%s/.local/bin:%s/.nix-profile/bin:/usr/bin:/bin\n\n[Install]\nWantedBy=default.target\n' \
-      "$bin" "$HOME" "$HOME" > "$UNIT"
-    systemctl --user daemon-reload && systemctl --user enable --now rex-resurrect.service
-  fi
-  say "rex-resurrect running ('rex-resurrect status' shows what will be resumed)"
-}
-
 install() {
+  "$DOTFILES/scripts/rex-resurrect-cleanup.sh" --quiet   # TEMPORARY: drop the old daemon if it's still here
   if is_mac; then install_app; login_item; fi
   command -v rex >/dev/null || { say "rex CLI not found — launch Rex once, then 'just setup rex'"; return; }
   rex terminfo setup
   rex skill setup
-  rex config check >/dev/null && say "config ok"
-  install_resurrect
+  if rex config check >/dev/null; then say "config ok"; else say "rex config check failed — run it to see why"; fi
 }
 
 remove() {
   if is_mac; then
-    launchctl bootout "gui/$(id -u)/$LABEL" 2>/dev/null || true; rm -f "$PLIST"
-  else
-    systemctl --user disable --now rex-resurrect.service 2>/dev/null || true; rm -f "$UNIT"
+    osascript -e 'tell application "System Events" to delete (every login item whose path contains "/Rex")' >/dev/null 2>&1 || true
   fi
-  say "rex-resurrect removed (the Rex app is left installed)"
+  say "removed the login item (the Rex app, terminfo and skills are left installed)"
 }
 
 main "$@"

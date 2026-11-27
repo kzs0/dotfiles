@@ -13,7 +13,7 @@ justfile            short menu of recipes (`just` lists them)
 install.sh          bootstrap for a fresh machine
 Brewfile            macOS packages
 flake.nix, nix/     Linux packages (Home Manager)
-config/<app>/       config files, symlinked file by file (bin → ~/.local/bin, pi → ~/.pi/agent)
+config/<app>/       config files, symlinked file by file (pi → ~/.pi/agent)
 scripts/<name>.sh   one script per component: install | remove | update
 ```
 
@@ -52,7 +52,7 @@ Each component is `scripts/<name>.sh install|remove|update`, so it's easy to rea
 ## Uninstall
 
 ```sh
-just uninstall           # unlink configs, remove fish plugins, rex-resurrect, headroom; restore default shell
+just uninstall           # unlink configs, remove fish plugins, headroom, Rex login item; restore default shell
 just remove packages     # also remove the packages (asks first)
 ```
 
@@ -87,16 +87,9 @@ Files that existed before linking are moved to `~/.dotfiles-backup/<timestamp>/`
 
 ## Rex: resume after a server restart
 
-Rex restores sessions/panes/cwds itself; `rex-resurrect` (a small daemon, `just setup rex`)
-brings back what was *running* in each pane:
-
-- Every 5s it asks Rex for each pane's foreground process. For agents it reads the live
-  conversation id from the process (`~/.claude/sessions/<pid>.json`, `~/.codex/session-tags.jsonl`,
-  pi's session file), so moving panes or `/resume`-ing is always reflected.
-- When the server comes back, agents are resumed automatically (`claude --resume <id>`,
-  `codex resume <id>`, `pi --session <file>`, safe flags kept, prompts never replayed). Other
-  commands are typed into the pane but wait for Enter.
-- `rex-resurrect status` shows what would be resumed; log in `~/.local/state/rex-resurrect/`.
+Rex brings back sessions, panes, cwds and what was running in each pane on its own. Machines
+set up before that still have the old `rex-resurrect` daemon: run `just rex-resurrect-cleanup`
+once on each (`just setup rex` / `just update` also do it quietly). That recipe is temporary.
 
 ## Adding things
 
@@ -111,8 +104,7 @@ brings back what was *running* in each pane:
 
 - Prompt: Tide. Run `tide configure`, then `just prompt-save` to store the look in `config/fish/tide-style.fish`; `just setup fish` applies it on every machine. Needs a Nerd Font — Ghostty and Zed use JetBrainsMono Nerd Font.
 - Rex: `just setup rex` installs the app on macOS (and adds it to Login Items so the server comes back after a
-  reboot), plus its terminfo entry, Claude/Codex/pi skills and `rex-resurrect`. On Linux it skips the app; install
-  Rex yourself. `rex-resurrect` installs as a systemd user service there, but has only been tested on macOS.
+  reboot), plus its terminfo entry and Claude/Codex/pi skills. On Linux it skips the app; install Rex yourself.
 - k3d uses a rootful podman machine; `DOCKER_HOST` is exported in fish from the universal var `DOTFILES_PODMAN_SOCK`.
 - Podman on Linux comes from the OS (`virtualisation.podman.enable` on NixOS, `apt install podman` on Ubuntu).
 - NixOS: set the login shell declaratively (`programs.fish.enable = true; users.users.<you>.shell = pkgs.fish;`).
