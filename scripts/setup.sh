@@ -42,7 +42,7 @@ wizard() {
     "nvim|Neovim plugins (LazyVim, pinned)|$(chk nvim 1)"
     "agents|Coding agents: claude, codex, pi|$(chk agents 1)"
     "headroom|Headroom compression proxy for the agents|$(chk headroom 1)"
-    "rex|Rex terminal app + rex-resurrect|$(chk rex "$(is_mac && echo 1 || echo 0)")"
+    "rex|Rex terminal app (login item, terminfo, skills)|$(chk rex "$(is_mac && echo 1 || echo 0)")"
     "podman|Podman socket for k3d|$(chk podman 1)"
   )
   is_mac && items+=("macos|macOS defaults (key repeat, Finder, Dock)|$(chk macos 0)")
