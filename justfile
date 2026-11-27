@@ -1,4 +1,6 @@
 # kzs0 dotfiles — run `just install` on a new machine, `just` to see this list.
+# `just install` opens a wizard to pick components, language versions and cloud CLIs;
+# the choices are saved in ~/.config/dotfiles/install.env (machine-local).
 #
 # Each component is a script in scripts/<name>.sh with install / remove / update:
 #   packages  Brewfile (macOS) or nix/packages.nix via Home Manager (Linux)
@@ -6,32 +8,35 @@
 #   nvim      LazyVim plugins (pinned lockfile)         agents   claude, codex, pi
 #   headroom  token-compression proxy                   rex      Rex app, terminfo, skills
 #   podman    container VM/socket for k3d               macos    optional macOS defaults
+#   langs     python/go/node/rust versions via mise     shortcut short `dots`-style command
 # Configs in config/<app> are symlinked into place by scripts/link.sh.
 
 set shell := ["bash", "-euo", "pipefail", "-c"]
 
 s := justfile_directory() / "scripts"
-components := "packages fish nvim shell agents headroom rex podman"
+components := "packages fish nvim shell agents langs headroom rex podman shortcut macos"
 
 # list recipes
 default:
     @just --list --unsorted
 
-# set up this machine (safe to re-run)
-install: link
-    for c in {{components}}; do {{s}}/$c.sh install; done
-    @echo "✔ done. Next: 'just auth' and 'just git-identity \"Name\" email', then open a new terminal."
+# set up this machine: wizard, then install what you picked (safe to re-run; --yes: no questions)
+install *flags: link
+    {{s}}/setup.sh install {{flags}}
 
-# undo install; packages stay (remove them with `just remove packages`)
-uninstall:
-    for c in rex headroom shell fish; do {{s}}/$c.sh remove; done
-    {{s}}/link.sh unlink
+# re-run the setup wizard (components, languages, cloud CLIs, command name) without installing
+configure:
+    {{s}}/setup.sh configure
 
-# pull the repo and update every component
+# remove what install set up: pick in a menu (--yes: everything, packages included)
+uninstall *flags:
+    {{s}}/setup.sh uninstall {{flags}}
+
+# pull the repo and update the components this machine picked
 update:
     git -C {{justfile_directory()}} pull --rebase --autostash
     {{s}}/link.sh link
-    for c in {{components}}; do {{s}}/$c.sh update; done
+    {{s}}/setup.sh update
 
 # show what's linked, installed and missing
 doctor:
@@ -39,12 +44,12 @@ doctor:
 
 # set up one component, e.g. `just setup rex`
 setup component:
-    @test -x {{s}}/{{component}}.sh || { echo "unknown component '{{component}}' — one of: {{components}} macos"; exit 1; }
+    @test -x {{s}}/{{component}}.sh || { echo "unknown component '{{component}}' — one of: {{components}}"; exit 1; }
     {{s}}/{{component}}.sh install
 
 # remove one component, e.g. `just remove headroom`
 remove component:
-    @test -x {{s}}/{{component}}.sh || { echo "unknown component '{{component}}' — one of: {{components}} macos"; exit 1; }
+    @test -x {{s}}/{{component}}.sh || { echo "unknown component '{{component}}' — one of: {{components}}"; exit 1; }
     {{s}}/{{component}}.sh remove
 
 # symlink configs (all, or e.g. `just link zed`)
