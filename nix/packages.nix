@@ -55,6 +55,10 @@ with pkgs;
 
   # fonts
   nerd-fonts.jetbrains-mono
+  # Atkinson Hyperlegible (Braille Institute): the original, Next, and Mono
+  atkinson-hyperlegible
+  atkinson-hyperlegible-next
+  atkinson-hyperlegible-mono
 ]
 ++ lib.optionals gui [
   ghostty
