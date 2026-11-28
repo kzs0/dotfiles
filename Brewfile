@@ -56,4 +56,8 @@ if OS.mac?
   cask "zed"
   cask "codex"
   cask "font-jetbrains-mono-nerd-font"
+  # Atkinson Hyperlegible (Braille Institute): the original, Next, and Mono
+  cask "font-atkinson-hyperlegible"
+  cask "font-atkinson-hyperlegible-next"
+  cask "font-atkinson-hyperlegible-mono"
 end
