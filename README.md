@@ -123,8 +123,8 @@ once on each (`just setup rex` / `just update` also do it quietly). That recipe 
 ## Notes
 
 - Prompt: Tide. Run `tide configure`, then `just prompt-save` to store the look in `config/fish/tide-style.fish`; `just setup fish` applies it on every machine. Needs a Nerd Font — Ghostty and Zed use JetBrainsMono Nerd Font.
-- Rex: `just setup rex` installs the app on macOS (and adds it to Login Items so the server comes back after a
-  reboot), plus its terminfo entry and Claude/Codex/pi skills. On Linux it skips the app; install Rex yourself.
+- Rex: install the app yourself (the setup doesn't download it), open it once, then `just setup rex` adds it to
+  Login Items on macOS (so the server comes back after a reboot) plus its terminfo entry and Claude/Codex/pi skills.
 - k3d uses a rootful podman machine; `DOCKER_HOST` is exported in fish from the universal var `DOTFILES_PODMAN_SOCK`.
 - Podman on Linux comes from the OS (`virtualisation.podman.enable` on NixOS, `apt install podman` on Ubuntu).
 - NixOS: set the login shell declaratively (`programs.fish.enable = true; users.users.<you>.shell = pkgs.fish;`).
